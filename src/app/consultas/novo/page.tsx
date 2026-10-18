@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { cookies } from 'next/headers';
 import { createClient } from '@/utils/supabase/server';
 import { agendarConsulta } from '../actions';
 
@@ -23,7 +24,8 @@ export default function NovaConsultaPage(props: NovaConsultaPageProps) {
 async function NovaConsultaConteudo({
   searchParams,
 }: NovaConsultaPageProps) {
-  const supabase = await createClient();
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
   const params = await searchParams;
 
   // Busca a lista de médicos cadastrados no banco de dados

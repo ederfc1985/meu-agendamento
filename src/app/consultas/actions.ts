@@ -1,6 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 import { createClient } from '@/utils/supabase/server';
 
 function getTextField(formData: FormData, field: string) {
@@ -47,7 +48,8 @@ export async function agendarConsulta(formData: FormData) {
     );
   }
 
-  const supabase = await createClient();
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
   const { error } = await supabase.from('consultas').insert({
     paciente_nome: pacienteNome,
     medico_id: medicoId,
