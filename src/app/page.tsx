@@ -48,12 +48,20 @@ async function AdminDashboardContent() {
               Gestão de consultas médicas e agendamentos
             </p>
           </div>
-          <Link
-            href="/consultas/novo"
-            className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-sm"
-          >
-            + Nova Consulta
-          </Link>
+          <nav className="flex flex-wrap gap-3">
+            <Link
+              href="/banco-de-dados"
+              className="inline-flex items-center justify-center rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            >
+              Ver banco de dados
+            </Link>
+            <Link
+              href="/consultas/novo"
+              className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 font-medium text-white shadow-sm transition-colors hover:bg-blue-700"
+            >
+              + Nova Consulta
+            </Link>
+          </nav>
         </header>
 
         {/* Métrica / Resumo */}
