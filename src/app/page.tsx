@@ -21,21 +21,26 @@ export default function AdminDashboardPage() {
 async function AdminDashboardContent() {
   const supabase = await createClient();
 
-  // Busca todas as consultas agendadas com os dados do médico
-  const { data: consultas, error } = await supabase
-    .from('consultas')
-    .select(`
-      id,
-      paciente_nome,
-      data_hora_inicio,
-      data_hora_fim,
-      status,
-      medicos (
-        nome,
-        especialidade
-      )
-    `)
-    .order('data_hora_inicio', { ascending: true });
+  const [
+    { data: consultas, error },
+    { data: todos, error: todosError },
+  ] = await Promise.all([
+    supabase
+      .from('consultas')
+      .select(`
+        id,
+        paciente_nome,
+        data_hora_inicio,
+        data_hora_fim,
+        status,
+        medicos (
+          nome,
+          especialidade
+        )
+      `)
+      .order('data_hora_inicio', { ascending: true }),
+    supabase.from('todos').select('id, name').order('name'),
+  ]);
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -127,6 +132,30 @@ async function AdminDashboardContent() {
             </div>
           )}
         </div>
+
+        <section className="mt-8 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
+          <div className="border-b border-gray-100 px-6 py-4">
+            <h2 className="text-lg font-semibold text-gray-800">Tarefas</h2>
+          </div>
+
+          {todosError ? (
+            <p className="bg-red-50 p-4 text-sm text-red-700" role="alert">
+              Erro ao carregar tarefas: {todosError.message}
+            </p>
+          ) : !todos?.length ? (
+            <p className="p-8 text-center text-gray-500">
+              Nenhuma tarefa cadastrada.
+            </p>
+          ) : (
+            <ul className="divide-y divide-gray-100">
+              {todos.map((todo) => (
+                <li key={todo.id} className="px-6 py-4 text-sm text-gray-700">
+                  {todo.name}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       </div>
     </div>
   );
