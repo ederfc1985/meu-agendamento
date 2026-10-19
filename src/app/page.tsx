@@ -1,164 +1,191 @@
-import { Suspense } from 'react';
 import Link from 'next/link';
-import { cookies } from 'next/headers';
-import { createClient } from '@/utils/supabase/server';
+import Image from 'next/image';
 
-export default function AdminDashboardPage() {
+const specialties = [
+  {
+    name: 'Cardiologia',
+    image: '/images/especialidades/cardiologia.svg',
+    alt: 'Ilustração de um coração com traçado de eletrocardiograma',
+  },
+  {
+    name: 'Clínica Geral',
+    image: '/images/especialidades/clinica-geral.svg',
+    alt: 'Ilustração de profissional de saúde com estetoscópio',
+  },
+  {
+    name: 'Dermatologia',
+    image: '/images/especialidades/dermatologia.svg',
+    alt: 'Ilustração de rosto e cuidados com a pele',
+  },
+  {
+    name: 'Ortopedia',
+    image: '/images/especialidades/ortopedia.svg',
+    alt: 'Ilustração de um osso, representando a saúde ortopédica',
+  },
+  {
+    name: 'Pediatria',
+    image: '/images/especialidades/pediatria.svg',
+    alt: 'Ilustração alegre voltada ao cuidado infantil',
+  },
+];
+
+const steps = [
+  {
+    number: '01',
+    title: 'Escolha o profissional',
+    description: 'Consulte as especialidades disponíveis e encontre a opção adequada para você.',
+  },
+  {
+    number: '02',
+    title: 'Selecione um horário',
+    description: 'Informe seus dados e escolha a data e o horário desejados.',
+  },
+  {
+    number: '03',
+    title: 'Confirme seu agendamento',
+    description: 'Revise as informações e envie sua solicitação de consulta.',
+  },
+];
+
+export default function HomePage() {
   return (
-    <Suspense
-      fallback={
-        <main className="min-h-screen bg-gray-50 p-6">
-          <p className="mx-auto max-w-6xl text-gray-500" role="status">
-            Carregando painel...
-          </p>
-        </main>
-      }
-    >
-      <AdminDashboardContent />
-    </Suspense>
-  );
-}
-
-async function AdminDashboardContent() {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
-
-  const [
-    { data: consultas, error },
-    { data: todos, error: todosError },
-  ] = await Promise.all([
-    supabase
-      .from('consultas')
-      .select(`
-        id,
-        paciente_nome,
-        data_hora_inicio,
-        data_hora_fim,
-        status,
-        medicos (
-          nome,
-          especialidade
-        )
-      `)
-      .order('data_hora_inicio', { ascending: true }),
-    supabase.from('todos').select('id, name').order('name'),
-  ]);
-
-  return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Cabeçalho do Painel Admin */}
-        <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Painel de Administração</h1>
-            <p className="text-gray-500 text-sm mt-1">
-              Gestão de consultas médicas e agendamentos
-            </p>
-          </div>
-          <nav className="flex flex-wrap gap-3">
+    <main className="min-h-screen bg-white text-slate-800">
+      <header className="border-b border-emerald-100 bg-white">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-4 sm:px-8">
+          <Link href="/" className="text-2xl font-bold tracking-tight text-emerald-950">
+            Doctor <span className="text-emerald-700">Franco</span>
+          </Link>
+          <nav className="flex items-center gap-3 sm:gap-6" aria-label="Navegação principal">
+            <a className="text-sm font-medium text-slate-600 hover:text-emerald-800" href="#especialidades">
+              Especialidades
+            </a>
+            <a className="text-sm font-medium text-slate-600 hover:text-emerald-800" href="#como-agendar">
+              Como agendar
+            </a>
             <Link
-              href="/banco-de-dados"
-              className="inline-flex items-center justify-center rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50"
-            >
-              Ver banco de dados
-            </Link>
-            <Link
+              className="rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-800"
               href="/consultas/novo"
-              className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 font-medium text-white shadow-sm transition-colors hover:bg-blue-700"
             >
-              + Nova Consulta
+              Agendar consulta
             </Link>
           </nav>
-        </header>
+        </div>
+      </header>
 
-        {/* Métrica / Resumo */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <span className="text-sm font-medium text-gray-500">Total de Consultas</span>
-            <p className="text-3xl font-bold text-gray-900 mt-2">{consultas?.length || 0}</p>
+      <section className="overflow-hidden bg-gradient-to-br from-emerald-950 via-emerald-800 to-teal-700">
+        <div className="mx-auto grid max-w-6xl items-center gap-10 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="text-white">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-200">
+              Cuidado perto de você
+            </p>
+            <h1 className="mt-4 max-w-2xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
+              Agende sua consulta na Doctor Franco
+            </h1>
+            <p className="mt-5 max-w-xl text-lg leading-8 text-emerald-50">
+              Consulte as especialidades disponíveis e solicite seu horário de forma simples e online.
+            </p>
+            <Link
+              className="mt-8 inline-flex rounded-lg bg-white px-6 py-3.5 font-semibold text-emerald-900 shadow-sm transition hover:bg-emerald-50"
+              href="/consultas/novo"
+            >
+              Agendar uma consulta
+            </Link>
+            <p className="mt-4 text-sm text-emerald-100">
+              Atendimento em Santo André, São Paulo.
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-sm sm:p-8">
+            <div className="flex size-12 items-center justify-center rounded-2xl bg-white/15 text-2xl" aria-hidden="true">
+              +
+            </div>
+            <h2 className="mt-5 text-xl font-bold text-white">Sua saúde em primeiro lugar</h2>
+            <p className="mt-2 leading-7 text-emerald-50">
+              Veja os profissionais cadastrados e escolha a especialidade para iniciar seu agendamento.
+            </p>
+            <a className="mt-5 inline-flex font-semibold text-white underline decoration-emerald-300 underline-offset-4 hover:text-emerald-100" href="#especialidades">
+              Explorar especialidades
+            </a>
           </div>
         </div>
+      </section>
 
-        {/* Tabela de Agendamentos */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100">
-            <h2 className="text-lg font-semibold text-gray-800">Próximos Agendamentos</h2>
-          </div>
-
-          {error && (
-            <div className="p-4 bg-red-50 text-red-700 text-sm">
-              Erro ao carregar consultas: {error.message}
-            </div>
-          )}
-
-          {!consultas || consultas.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
-              Nenhuma consulta agendada até o momento.
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                    <th className="px-6 py-3">Paciente</th>
-                    <th className="px-6 py-3">Médico / Especialidade</th>
-                    <th className="px-6 py-3">Data e Hora</th>
-                    <th className="px-6 py-3">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100 text-sm text-gray-700">
-                  {consultas.map((c) => (
-                    <tr key={c.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 font-medium text-gray-900">{c.paciente_nome}</td>
-                      <td className="px-6 py-4">
-                        <div>{c.medicos?.[0]?.nome || 'Não atribuído'}</div>
-                        <div className="text-xs text-gray-500">
-                          {c.medicos?.[0]?.especialidade}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        {new Date(c.data_hora_inicio).toLocaleString('pt-BR', {
-                          dateStyle: 'short',
-                          timeStyle: 'short',
-                        })}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          {c.status || 'Agendada'}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+      <section className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20" id="especialidades">
+        <div className="max-w-2xl">
+          <p className="text-sm font-semibold uppercase tracking-wider text-emerald-700">Atendimento médico</p>
+          <h2 className="mt-2 text-3xl font-bold tracking-tight text-emerald-950">Especialidades</h2>
+          <p className="mt-3 leading-7 text-slate-600">
+            Confira algumas áreas de atendimento da clínica. A disponibilidade dos profissionais e horários aparece no formulário de agendamento.
+          </p>
         </div>
+        <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {specialties.map((specialty) => (
+            <li className="overflow-hidden rounded-2xl border border-emerald-100 bg-emerald-50/50" key={specialty.name}>
+              <Image
+                alt={specialty.alt}
+                className="h-44 w-full object-cover"
+                height={320}
+                src={specialty.image}
+                width={600}
+              />
+              <div className="p-5">
+                <h3 className="font-semibold text-emerald-950">{specialty.name}</h3>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <Link
+          className="mt-7 inline-flex rounded-lg border border-emerald-700 px-5 py-3 font-semibold text-emerald-800 transition hover:bg-emerald-50"
+          href="/consultas/novo"
+        >
+          Agendar uma consulta
+        </Link>
+      </section>
 
-        <section className="mt-8 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
-          <div className="border-b border-gray-100 px-6 py-4">
-            <h2 className="text-lg font-semibold text-gray-800">Tarefas</h2>
+      <section className="bg-emerald-50/70" id="como-agendar">
+        <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
+          <div className="max-w-2xl">
+            <p className="text-sm font-semibold uppercase tracking-wider text-emerald-700">Agendamento online</p>
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-emerald-950">Como marcar sua consulta</h2>
           </div>
+          <ol className="mt-8 grid gap-5 md:grid-cols-3">
+            {steps.map((step) => (
+              <li className="rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm" key={step.number}>
+                <span className="text-sm font-bold tracking-wider text-emerald-700">{step.number}</span>
+                <h3 className="mt-3 text-lg font-bold text-emerald-950">{step.title}</h3>
+                <p className="mt-2 leading-7 text-slate-600">{step.description}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
 
-          {todosError ? (
-            <p className="bg-red-50 p-4 text-sm text-red-700" role="alert">
-              Erro ao carregar tarefas: {todosError.message}
-            </p>
-          ) : !todos?.length ? (
-            <p className="p-8 text-center text-gray-500">
-              Nenhuma tarefa cadastrada.
-            </p>
-          ) : (
-            <ul className="divide-y divide-gray-100">
-              {todos.map((todo) => (
-                <li key={todo.id} className="px-6 py-4 text-sm text-gray-700">
-                  {todo.name}
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      </div>
-    </div>
+      <section className="mx-auto grid max-w-6xl gap-8 px-5 py-16 sm:px-8 sm:py-20 md:grid-cols-[1fr_auto] md:items-center">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-wider text-emerald-700">Onde estamos</p>
+          <h2 className="mt-2 text-3xl font-bold tracking-tight text-emerald-950">Doctor Franco</h2>
+          <address className="mt-3 not-italic leading-7 text-slate-600">
+            Rua Acre, 85<br />
+            Santo André, SP
+          </address>
+        </div>
+        <Link
+          className="inline-flex w-fit rounded-lg bg-emerald-700 px-6 py-3.5 font-semibold text-white transition hover:bg-emerald-800"
+          href="/consultas/novo"
+        >
+          Agendar consulta
+        </Link>
+      </section>
+
+      <footer className="border-t border-emerald-100 bg-emerald-950">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-6 text-sm text-emerald-100 sm:px-8">
+          <p className="font-semibold text-white">Doctor Franco</p>
+          <p>Rua Acre, 85 — Santo André, SP</p>
+          <Link className="text-emerald-100 underline underline-offset-4 hover:text-white" href="/login">
+            Acesso da equipe
+          </Link>
+        </div>
+      </footer>
+    </main>
   );
 }

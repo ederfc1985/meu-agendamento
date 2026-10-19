@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="320" viewBox="0 0 600 320" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="600" y2="320" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D1FAE5"/>
+      <stop offset="1" stop-color="#A7F3D0"/>
+    </linearGradient>
+    <linearGradient id="heart" x1="220" y1="72" x2="385" y2="250" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FB7185"/>
+      <stop offset="1" stop-color="#E11D48"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#bg)" d="M0 0h600v320H0z"/>
+  <circle cx="300" cy="160" r="117" fill="#ECFDF5"/>
+  <circle cx="300" cy="160" r="99" stroke="#6EE7B7" stroke-width="2"/>
+  <path d="M300 225s-77-46-77-97c0-25 18-43 42-43 17 0 29 9 35 23 7-14 19-23 36-23 24 0 42 18 42 43 0 51-78 97-78 97Z" fill="url(#heart)"/>
+  <path d="M203 164h46l19-28 25 53 22-40 16 15h66" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="9"/>
+  <circle cx="115" cy="83" r="8" fill="#34D399" opacity=".65"/>
+  <circle cx="490" cy="236" r="12" fill="#34D399" opacity=".45"/>
+</svg>

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { cookies } from 'next/headers';
-import { createClient } from '@/utils/supabase/server';
+import { AdminNavigation } from '../admin-navigation';
+import { requireAdmin } from '@/utils/supabase/admin';
 
 export default function BancoDeDadosPage() {
   return (
@@ -20,8 +20,7 @@ export default function BancoDeDadosPage() {
 }
 
 async function BancoDeDadosContent() {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
+  const { supabase } = await requireAdmin();
   const [medicosResult, consultasResult] = await Promise.all([
     supabase
       .from('medicos')
@@ -44,36 +43,31 @@ async function BancoDeDadosContent() {
   ]);
 
   return (
-    <main className="min-h-screen bg-gray-50 p-6">
+    <main className="min-h-screen bg-emerald-50/60 p-4 sm:p-8">
       <div className="mx-auto max-w-6xl space-y-8">
-        <header className="flex flex-col gap-4 rounded-xl border border-gray-100 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <AdminNavigation />
+        <header className="flex flex-col gap-4 rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Dados do banco
+            <h1 className="text-2xl font-bold text-emerald-950">
+              Dados da Clínica
             </h1>
             <p className="mt-1 text-sm text-gray-500">
-              Registros de médicos e consultas cadastrados no sistema.
+              Registros de médicos e consultas cadastrados na clínica.
             </p>
           </div>
           <nav className="flex flex-wrap gap-3">
             <Link
-              href="/"
-              className="inline-flex items-center justify-center rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50"
-            >
-              Voltar ao painel
-            </Link>
-            <Link
               href="/consultas/novo"
-              className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 font-medium text-white shadow-sm transition-colors hover:bg-blue-700"
+              className="inline-flex items-center justify-center rounded-lg bg-emerald-700 px-4 py-2 font-medium text-white shadow-sm transition-colors hover:bg-emerald-800"
             >
               + Nova consulta
             </Link>
           </nav>
         </header>
 
-        <section className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
-          <div className="border-b border-gray-100 px-6 py-4">
-            <h2 className="text-lg font-semibold text-gray-800">
+        <section className="overflow-hidden rounded-2xl border border-emerald-100 bg-white shadow-sm">
+          <div className="border-b border-emerald-50 px-6 py-4">
+            <h2 className="text-lg font-semibold text-emerald-950">
               Médicos ({medicosResult.data?.length ?? 0})
             </h2>
           </div>
@@ -113,9 +107,9 @@ async function BancoDeDadosContent() {
           )}
         </section>
 
-        <section className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
-          <div className="border-b border-gray-100 px-6 py-4">
-            <h2 className="text-lg font-semibold text-gray-800">
+        <section className="overflow-hidden rounded-2xl border border-emerald-100 bg-white shadow-sm">
+          <div className="border-b border-emerald-50 px-6 py-4">
+            <h2 className="text-lg font-semibold text-emerald-950">
               Consultas ({consultasResult.data?.length ?? 0})
             </h2>
           </div>

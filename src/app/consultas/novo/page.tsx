@@ -1,5 +1,7 @@
 import { Suspense } from 'react';
+import Link from 'next/link';
 import { cookies } from 'next/headers';
+import { connection } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { agendarConsulta } from '../actions';
 
@@ -24,19 +26,20 @@ export default function NovaConsultaPage(props: NovaConsultaPageProps) {
 async function NovaConsultaConteudo({
   searchParams,
 }: NovaConsultaPageProps) {
+  await connection();
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   const params = await searchParams;
-
-  // Busca a lista de médicos cadastrados no banco de dados
-  const { data: medicos } = await supabase
+  const { data: medicos, error: medicosError } = await supabase
     .from('medicos')
     .select('id, nome, especialidade')
     .order('nome');
 
   return (
-    <div className="max-w-2xl mx-auto my-10 p-6 bg-white rounded-lg shadow-md border border-gray-100">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">
+    <main className="min-h-screen bg-emerald-50/60 px-4 py-10">
+    <div className="mx-auto my-4 max-w-2xl rounded-2xl border border-emerald-100 bg-white p-6 shadow-lg shadow-emerald-950/5 sm:p-8">
+      <Link href="/" className="text-sm font-semibold text-emerald-800 hover:text-emerald-950">Doctor Franco</Link>
+      <h1 className="mb-6 mt-3 text-2xl font-bold text-emerald-950">
         Agendar Nova Consulta
       </h1>
 
@@ -53,10 +56,15 @@ async function NovaConsultaConteudo({
         </div>
       )}
 
+      {medicosError && (
+        <p className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800" role="alert">
+          Erro ao carregar médicos: {medicosError.message}
+        </p>
+      )}
       <form action={agendarConsulta} className="space-y-4">
         {/* Nome do Paciente */}
         <div>
-          <label htmlFor="paciente_nome" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="paciente_nome" className="mb-1 block text-sm font-medium text-slate-700">
             Nome Completo do Paciente
           </label>
           <input
@@ -64,21 +72,21 @@ async function NovaConsultaConteudo({
             id="paciente_nome"
             name="paciente_nome"
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full rounded-lg border border-slate-300 px-4 py-3 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100"
             placeholder="Ex: Maria Silva"
           />
         </div>
 
         {/* Seleção do Médico */}
         <div>
-          <label htmlFor="medico_id" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="medico_id" className="mb-1 block text-sm font-medium text-slate-700">
             Selecione o Médico
           </label>
           <select
             id="medico_id"
             name="medico_id"
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
+            className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100"
           >
             <option value="">Selecione um profissional...</option>
             {medicos?.map((medico) => (
@@ -91,7 +99,7 @@ async function NovaConsultaConteudo({
 
         {/* Data e Hora de Início */}
         <div>
-          <label htmlFor="data_hora_inicio" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="data_hora_inicio" className="mb-1 block text-sm font-medium text-slate-700">
             Data e Horário de Início
           </label>
           <input
@@ -99,13 +107,13 @@ async function NovaConsultaConteudo({
             id="data_hora_inicio"
             name="data_hora_inicio"
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full rounded-lg border border-slate-300 px-4 py-3 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100"
           />
         </div>
 
         {/* Data e Hora de Fim */}
         <div>
-          <label htmlFor="data_hora_fim" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="data_hora_fim" className="mb-1 block text-sm font-medium text-slate-700">
             Data e Horário de Término
           </label>
           <input
@@ -113,18 +121,19 @@ async function NovaConsultaConteudo({
             id="data_hora_fim"
             name="data_hora_fim"
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full rounded-lg border border-slate-300 px-4 py-3 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100"
           />
         </div>
 
         {/* Botão de Envio */}
         <button
           type="submit"
-          className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md shadow transition-colors duration-200"
+          className="w-full rounded-lg bg-emerald-700 px-4 py-3 font-semibold text-white shadow-sm transition-colors hover:bg-emerald-800"
         >
           Confirmar Agendamento
         </button>
       </form>
     </div>
+    </main>
   );
 }

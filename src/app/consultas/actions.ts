@@ -22,6 +22,22 @@ function redirectWithMessage(type: 'erro' | 'sucesso', message: string): never {
   redirect(`/consultas/novo?${params.toString()}`);
 }
 
+function getInsertErrorMessage(code: string | undefined) {
+  switch (code) {
+    case 'PGRST204':
+    case '42703':
+      return 'O banco ainda não tem a coluna paciente_nome. No Supabase SQL Editor, adicione-a à tabela consultas.';
+    case '23502':
+      return 'O banco exige paciente_id, mas o agendamento público não tem login. Configure paciente_id para aceitar NULL.';
+    case '42501':
+      return 'O Supabase bloqueou o agendamento pela política de acesso (RLS). Atualize a política INSERT para permitir visitantes sem login.';
+    case '23503':
+      return 'O médico selecionado não existe na tabela medicos. Atualize a página e selecione um médico cadastrado.';
+    default:
+      return 'O banco recusou o agendamento. Consulte os logs do servidor para ver o código do erro.';
+  }
+}
+
 export async function agendarConsulta(formData: FormData) {
   const pacienteNome = getTextField(formData, 'paciente_nome');
   const medicoId = getTextField(formData, 'medico_id');
@@ -50,7 +66,9 @@ export async function agendarConsulta(formData: FormData) {
 
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
+
   const { error } = await supabase.from('consultas').insert({
+    paciente_id: null,
     paciente_nome: pacienteNome,
     medico_id: medicoId,
     data_hora_inicio: inicio.toISOString(),
@@ -58,11 +76,12 @@ export async function agendarConsulta(formData: FormData) {
   });
 
   if (error) {
-    console.error('Falha ao agendar consulta:', error);
-    redirectWithMessage(
-      'erro',
-      'Não foi possível agendar a consulta. Verifique os dados e tente novamente.',
-    );
+    console.error('Falha ao agendar consulta:', {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+    });
+    redirectWithMessage('erro', getInsertErrorMessage(error.code));
   }
 
   redirectWithMessage('sucesso', 'Consulta agendada com sucesso!');
